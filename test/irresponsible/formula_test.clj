@@ -8,34 +8,6 @@
 (s/def ::foo (f/field :foo :conform (c/pred-conformer #{:foo}) :error "ugh"))
 (s/def ::bar (f/field :bar :conform (c/pred-conformer #{:bar}) :error "eek"))
 
-(t/deftest invalid?-test
-  (t/is (f/invalid? ::s/invalid))
-  (doseq [i [1 1.2 \a "a" :a 'a [] {} ()]]
-    (t/testing i
-      (t/is (not (f/invalid? i))))))
-
-(t/deftest try-conform-test
-  (t/is (c/invalid? (c/try-conform (throw (ex-info "" {})))))
-  (t/is (= ::sentinel  (c/try-conform ::sentinel))))
-
-(t/deftest keep-conformer-test
-  (t/is (c/invalid? ((c/keep-conformer (constantly nil)) 123)))
-  (t/is (= 123 ((c/keep-conformer identity) 123))))
-
-(t/deftest pred-conformer-test
-  (let [t1 (c/pred-conformer integer?)
-        t2 (c/pred-conformer integer? #(* 2 %))]
-    (doseq [i ["" [] {} () :a 'a 1.23]]
-      (t/is (c/invalid? (t1 i))))
-    (t/is (= 2 (t1 2)))
-    (t/is (= 4 (t2 2)))))
-
-(t/deftest conp-test
-  (let [t1 (c/conp (c/min 10) c/parse-long)]
-    (t/is (= 123 (t1 "123")))
-    (t/is (f/invalid? (t1 "abc")))
-    (t/is (f/invalid? (t1 "09")))))
-
 (t/deftest field-map-test
   (let [f1 (f/field "foo" :error "bar")]
     (t/is (= {:foo f1} (f/field-map {:foo f1})))
@@ -177,8 +149,7 @@
     (t/testing :explain)
     (t/testing :describe)
     (t/testing :gen)
-    (t/testing :with-gen)
-    ))
+    (t/testing :with-gen)))
 
 (t/deftest form-test
   (t/testing :mandatory
@@ -196,5 +167,4 @@
     (t/is (c/invalid? (s/conform f3 {})))
     (t/is (c/invalid? (s/conform f3 {:foo :bar})))
     (t/is (= {::foo :foo :conformed? true ::bar ::s/invalid} (s/conform f3 {:foo :foo})))
-    (t/is (= {::foo :foo :conformed? true ::bar :bar} (s/conform f3 {:foo :foo :bar :bar})))
-    ))
+    (t/is (= {::foo :foo :conformed? true ::bar :bar} (s/conform f3 {:foo :foo :bar :bar})))))
