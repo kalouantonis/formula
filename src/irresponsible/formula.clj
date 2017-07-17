@@ -1,13 +1,4 @@
-(ns irresponsible.formula
-  (:require [clojure.core.match :refer [match]]
-            [flatland.ordered.map :refer [ordered-map]]))
-
-(defn blank?
-  "true if a value is either nil or the empty string
-   args: [val]
-   returns: boolean"
-  [v]
-  (or (nil? v) (= "" v)))
+(ns irresponsible.formula)
 
 (defn invalid?
   "true if there was at least one error
@@ -22,13 +13,10 @@
    returns: boolean"
   (complement invalid?))
 
-(defn truly
-  "Can't use any? as it's 1.9 only"
-  [_] true)
-
-(def nnil?
-  "Can't use some? as it's 1.9 only"
-  (complement nil?))
+(def truly
+  "Always returns true, no matter the arguments
+   returns: boolean"
+  (constantly true))
 
 (defprotocol Formula
   (deform* [self form-data path])

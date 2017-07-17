@@ -4,9 +4,7 @@
             [clojure.test.check.clojure-test :as tt]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.math.numeric-tower :as math]
-            [irresponsible.formula :as f]
-            [irresponsible.formula.conform :as c]))
+            [irresponsible.formula :as f]))
 
 ;; generation utilities
 
@@ -16,14 +14,7 @@
 
 ;; basic functions
 
-(def blank (gen/one-of [nils (gen/return "")]))
 (def nonempty-string   (gen/such-that seq gen/string))
-
-(tt/defspec blank?-test
-  (prop/for-all [b blank
-                 v nonempty-string]
-    (and (true?  (f/blank? b))
-         (false? (f/blank? v)))))
 
 (def form-fields        (gen/map some* some*))
 (def canon-fields       (gen/map some* some*))
@@ -49,11 +40,6 @@
 (tt/defspec truly-test
   (prop/for-all [x gen/any]
     (true? (f/truly x))))
-
-(tt/defspec nnil?-test
-  (prop/for-all [x some*]
-    (and (true? (f/nnil? x))
-         (false? (f/nnil? nil)))))
 
 (tt/defspec formula?-test
   (prop/for-all [x (gen/such-that #(not (satisfies? f/Formula %)) gen/any)]
