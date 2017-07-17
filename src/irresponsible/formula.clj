@@ -1,7 +1,6 @@
 (ns irresponsible.formula
   (:require [clojure.core.match :refer [match]]
-            [flatland.ordered.map :refer [ordered-map]]
-            [irresponsible.formula.conform :as c]))
+            [flatland.ordered.map :refer [ordered-map]]))
 
 (defn blank?
   "true if a value is either nil or the empty string

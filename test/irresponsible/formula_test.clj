@@ -4,11 +4,9 @@
             [clojure.test.check.clojure-test :as tt]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [clojure.spec.alpha :as s]
             [clojure.math.numeric-tower :as math]
             [irresponsible.formula :as f]
-            [irresponsible.formula.conform :as c]
-            [irresponsible.spectra :as ss]))
+            [irresponsible.formula.conform :as c]))
 
 ;; generation utilities
 
