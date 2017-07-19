@@ -54,7 +54,8 @@
   (reduce (fn [{f1 :form e1 :error d1 :data} {f2 :form e2 :error d2 :data}]
               {:form (merge f1 f2)
                :error (merge-with into e1 e2)
-               :data (merge d1 d2)}) f fs))
+               :data (merge d1 d2)})
+          f fs))
 
 (defrecord Field [in-key out-key test canon deform reform error]
   Formula
@@ -69,7 +70,7 @@
              ;; if canon throws, we shall assume we aren't meant to keep the field value
              (try {:form {in-key (canon in)} :error {(into path in-key) [error]}}
                   (catch Throwable e
-                    {:error {(into path in-key) [error]}}))))))
+                    {:error {(conj path in-key) [error]}}))))))
   (reform* [self form]
     {:form {in-key (reform (get form out-key))}}))
 
@@ -183,5 +184,6 @@
 
 (defmacro or  [& opts]
   `(or* ~@opts))
+
 (defmacro and [& opts]
-  `(or* ~@opts))
+  `(and* ~@opts))
