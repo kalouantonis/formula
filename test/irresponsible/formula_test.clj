@@ -82,25 +82,21 @@
                  error   some*
                  pass    gen/large-integer
                  fail    gen/keyword]
-    (let [f1 (f/field {:in-key in-key :out-key out-key :error error
-                       :test   integer?
-                       :canon  inc
-                       :deform #(+ 2 %)
-                       :reform #(+ 3 %)})
-          pass-res (f/deform f1 {in-key pass})
-          fail-res (f/deform f1 {in-key fail})]
-      (t/is (f/valid? pass-res))
-      (t/is (= (+ 1 pass) (get-in pass-res [:form in-key])))
-      (t/is (= (+ 2 pass) (get-in pass-res [:data out-key])))
-      (t/is (f/invalid? fail-res)))))
+    (let [field (f/field {:in-key in-key :out-key out-key :error error
+                          :test   integer?
+                          :canon  inc
+                          :deform #(+ 2 %)
+                          :reform #(+ 3 %)})]
+      (t/testing "deform"
+        (let [pass-res (f/deform field {in-key pass})
+              fail-res (f/deform field {in-key fail})]
+          (t/is (f/valid? pass-res))
+          (t/is (= (+ 1 pass) (get-in pass-res [:form in-key])))
+          (t/is (= (+ 2 pass) (get-in pass-res [:data out-key])))
+          (t/is (f/invalid? fail-res))))
 
-;; (let [f1 (f/field {:in-key :foo :out-key :bar :error :baz
-;;                    :test   integer?
-;;                    :canon  inc
-;;                    :deform #(+ 2 %)
-;;                    :reform #(+ 3 %)})]
-;;           (f/deform f1 {:foo :k}))
-
-;; (field-test)
-
-;; TODO: and* or form
+      (t/testing "reform"
+        (let [pass-res (f/reform field {in-key pass})
+              fail-res (f/reform field {in-key fail})]
+          (t/is (f/valid? pass-res))
+          (t/is (f/invalid? fail-res)))))))
