@@ -26,7 +26,7 @@
 (def valid-result       (gen/frequency [[10 base-result] [1 dirty-valid-result]]))
 (def any-result         (gen/one-of [invalid-result dirty-valid-result dirty-valid-result]))
 
-(tt/defspec test-valid?-and-invalid?
+(tt/defspec spec-valid?-and-invalid?
   (prop/for-all [i invalid-result, v valid-result]
     (t/testing "valid?"
       (t/is (f/valid? v))
@@ -36,22 +36,22 @@
       (t/is (f/invalid? i))
       (t/is (not (f/invalid? v))))))
 
-(tt/defspec test-truly
+(tt/defspec spec-truly
   (prop/for-all [x gen/any]
     (t/is (f/truly x))))
 
-(tt/defspec test-formula?
+(tt/defspec spec-formula?
   (prop/for-all [x (gen/such-that #(not (satisfies? f/Formula %)) gen/any)]
     (t/is (not (f/formula? x)))
     (t/is (f/formula? (reify f/Formula)))))
 
-(tt/defspec test-deform
+(tt/defspec spec-deform
   (prop/for-all [x some*, y some*, z some*]
     (with-redefs [f/deform* vector]
       (and (= [x y []] (f/deform x y))
            (= [x y z]  (f/deform x y z))))))
 
-(tt/defspec test-reform
+(tt/defspec spec-reform
   (prop/for-all [x some*, y some*]
     (with-redefs [f/reform* vector]
       (= [x y] (f/reform x y)))))
@@ -62,7 +62,7 @@
 (defn ends? [post all]
   (= post (subvec all (- (count all) (count post)))))
 
-(tt/defspec test-merge-results
+(tt/defspec spec-merge-results
   (prop/for-all [{fx :form ex :error dx :data :as x} any-result
                  {fy :form ey :error dy :data :as y} any-result]
     (let [{:keys [form error data] :as z} (f/merge-results x y)]
@@ -76,7 +76,7 @@
         (t/is (every? #(starts? (dx %) (data %)) (keys dx)))
         (t/is (every? #(ends?   (dy %) (data %)) (keys dy)))))))
 
-(tt/defspec test-field
+(tt/defspec spec-field
   (prop/for-all [in-key  some*
                  out-key some*
                  error   some*
