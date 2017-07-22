@@ -60,17 +60,13 @@
 (defrecord Field [in-key out-key test canon deform reform error]
   Formula
   (deform* [self form path]
-    (let [in (get form in-key)]
-      (try (or (test in) (throw (ex-info "" {})))
-           (let [f (canon in)
-                 d (deform in)]
-             {:form {in-key f}
-              :data {out-key d}})
-           (catch Throwable e
-             ;; if canon throws, we shall assume we aren't meant to keep the field value
-             (try {:form {in-key (canon in)} :error {(into path in-key) [error]}}
-                  (catch Throwable e
-                    {:error {(conj path in-key) [error]}}))))))
+    (let [in-val (get form in-key)]
+      (if (test in-val)
+        ;; if canon returns nil, we shall assume we aren't meant to keep the field value
+        (if-let [canon-val (canon in-val)]
+          {:form {in-key canon-val} :data {out-key (deform in-val)}}
+          {:error {(conj path in-key) [error]}})
+        {:form {in-key in-val} :error {(conj path in-key) [error]}})))
   (reform* [self form]
     {:form {in-key (reform (get form out-key))}}))
 
